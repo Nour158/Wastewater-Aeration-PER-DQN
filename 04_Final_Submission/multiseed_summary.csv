@@ -1,0 +1,11 @@
+controller,metric,mean,sample_sd,n_model_seeds
+dqn,reward,-61.53867,0.74492,3
+dqn,do_below_2_pct,13.85433,2.70804,3
+dqn,do_above_3_pct,2.118,1.5108,3
+dqn,energy_proxy_sum,22.56267,0.33734,3
+dqn,blower_switches,25.41667,2.08407,3
+per,reward,-62.35167,0.59133,3
+per,do_below_2_pct,13.368,2.98973,3
+per,do_above_3_pct,5.278,2.49237,3
+per,energy_proxy_sum,23.375,0.48266,3
+per,blower_switches,23.7,5.30495,3

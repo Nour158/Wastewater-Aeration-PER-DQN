@@ -1,0 +1,44 @@
+Model: dqn_dry_seed42.pt
+Surrogate fidelity on test: 0.8524
+Majority-action baseline: 0.8238
+Balanced fidelity: 0.5687
+IMPORTANT: rules approximate the neural policy; not physical safety rules.
+Test rows are held out from tree fitting, but may overlap model training if train-dataset differs.
+
+|--- BOD_proxy_mg_L <= 165.83
+|   |--- BOD_proxy_mg_L <= 83.12
+|   |   |--- BOD_proxy_mg_L <= 74.67
+|   |   |   |--- class: 1
+|   |   |--- BOD_proxy_mg_L >  74.67
+|   |   |   |--- class: 1
+|   |--- BOD_proxy_mg_L >  83.12
+|   |   |--- flow_m3_h <= 882.75
+|   |   |   |--- DO_mg_L <= 2.90
+|   |   |   |   |--- class: 2
+|   |   |   |--- DO_mg_L >  2.90
+|   |   |   |   |--- class: 2
+|   |   |--- flow_m3_h >  882.75
+|   |   |   |--- DO_mg_L <= 2.18
+|   |   |   |   |--- class: 3
+|   |   |   |--- DO_mg_L >  2.18
+|   |   |   |   |--- class: 2
+|--- BOD_proxy_mg_L >  165.83
+|   |--- DO_mg_L <= 2.51
+|   |   |--- influent_BOD_proxy <= 175.30
+|   |   |   |--- class: 2
+|   |   |--- influent_BOD_proxy >  175.30
+|   |   |   |--- DO_mg_L <= 2.46
+|   |   |   |   |--- class: 3
+|   |   |   |--- DO_mg_L >  2.46
+|   |   |   |   |--- class: 3
+|   |--- DO_mg_L >  2.51
+|   |   |--- flow_m3_h <= 883.27
+|   |   |   |--- BOD_proxy_mg_L <= 178.12
+|   |   |   |   |--- class: 2
+|   |   |   |--- BOD_proxy_mg_L >  178.12
+|   |   |   |   |--- class: 2
+|   |   |--- flow_m3_h >  883.27
+|   |   |   |--- BOD_proxy_mg_L <= 172.82
+|   |   |   |   |--- class: 2
+|   |   |   |--- BOD_proxy_mg_L >  172.82
+|   |   |   |   |--- class: 3

@@ -1,0 +1,4 @@
+- International Water Association (IWA), Benchmark Simulation Model No. 1 (BSM1), https://iwa-mia.org/benchmarking/ (verify original publication and data license).
+- Mnih et al. (2015), Human-level control through deep reinforcement learning, Nature.
+- Schaul et al. (2016), Prioritized Experience Replay, ICLR.
+- Lundberg and Lee (2017), A Unified Approach to Interpreting Model Predictions, NeurIPS.
