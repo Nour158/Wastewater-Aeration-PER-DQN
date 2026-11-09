@@ -1,0 +1,8 @@
+,reward,reward,do_below_2_pct,do_below_2_pct,do_above_3_pct,do_above_3_pct,energy_proxy_sum,energy_proxy_sum,blower_switches,blower_switches
+,mean,std,mean,std,mean,std,mean,std,mean,std
+controller,,,,,,,,,,
+dqn,-61.461,0.693,14.583,2.196,2.396,1.893,22.891,0.318,25.7,1.35
+fixed_50,-95.903,0.0,23.802,0.0,23.021,0.0,24.0,0.0,0.0,0.0
+fixed_75,-415.419,0.0,0.0,0.0,86.771,0.0,54.0,0.0,0.0,0.0
+per,-62.348,0.732,14.132,2.884,4.931,1.882,23.694,0.451,25.4,4.289
+rule_based,-65.202,0.0,3.802,0.0,4.896,0.0,26.75,0.0,18.95,0.0

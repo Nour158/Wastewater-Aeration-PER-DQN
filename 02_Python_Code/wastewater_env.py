@@ -1,8 +1,10 @@
 from pathlib import Path
+from random import seed
 import numpy as np
 import pandas as pd
 import gymnasium as gym
 from gymnasium import spaces
+from requests import options
 from config import TankConfig
 
 class WastewaterAerationEnv(gym.Env):
@@ -47,7 +49,19 @@ class WastewaterAerationEnv(gym.Env):
 
     def reset(self, *, seed=None, options=None):
         super().reset(seed=seed)
-        self.idx = 0 if len(self.bod_series) == 1 else int(self.np_random.integers(len(self.bod_series)))
+        options = options or {}
+
+        if "start_idx" in options:
+            start_idx = int(options["start_idx"])
+            if not 0 <= start_idx < len(self.bod_series):
+                raise ValueError("start_idx outside dataset range")
+            self.idx = start_idx
+        else:
+            self.idx = (
+                0 if len(self.bod_series) == 1
+                else int(self.np_random.integers(len(self.bod_series)))
+            )
+
         self.steps = 0
         self.do = 2.5
         self.bod = 40.0

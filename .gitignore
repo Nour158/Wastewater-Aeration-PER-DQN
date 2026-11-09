@@ -7,3 +7,6 @@ __pycache__/
 .ipynb_checkpoints/
 .DS_Store
 Thumbs.db
+my_env/
+03_Results/interactive_experiments/
+03_Results/simulation_exports/

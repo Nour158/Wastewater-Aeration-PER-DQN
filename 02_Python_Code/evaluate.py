@@ -58,6 +58,95 @@ def evaluate(controller, data, seed, episodes=20):
     summary['reward_std'] = float(df['reward'].std(ddof=0))
     return summary, df
 
+def evaluate_full_window(controller, data):
+    """Evaluate every influent row exactly once, in order."""
+    from dataclasses import replace
+    from config import TankConfig
+
+    n = len(pd.read_csv(data))
+
+    cfg = replace(TankConfig(), episode_steps=n)
+    env = WastewaterAerationEnv(csv_path=data, config=cfg)
+
+    obs, _ = env.reset(seed=900, options={"start_idx": 0})
+
+    rows = []
+    actions = []
+
+    for step in range(n):
+        action = int(controller.act(obs))
+        actions.append(action)
+
+        obs, reward, terminated, truncated, info = env.step(action)
+
+        rows.append({
+            "step": step,
+            "reward": reward,
+            "do_mg_l": info["do_mg_l"],
+            "bod_proxy_mg_l": info["bod_proxy_mg_l"],
+            "energy_proxy": info["energy_proxy"],
+            "blower_fraction": info["blower_fraction"],
+        })
+
+        if terminated or truncated:
+            break
+
+    df = pd.DataFrame(rows)
+
+    if len(df) != n:
+        raise RuntimeError("Full-window evaluation ended early")
+
+    summary = {
+        "reward": df["reward"].sum(),
+        "do_below_2_pct": 100 * (df["do_mg_l"] < 2).mean(),
+        "do_above_3_pct": 100 * (df["do_mg_l"] > 3).mean(),
+        "mean_do": df["do_mg_l"].mean(),
+        "mean_bod_proxy": df["bod_proxy_mg_l"].mean(),
+        "energy_proxy_sum": df["energy_proxy"].sum(),
+        "blower_switches": int(
+            np.count_nonzero(np.diff(df["blower_fraction"]))
+        ),
+        "final_bod_proxy": df["bod_proxy_mg_l"].iloc[-1],
+        "mean_blower_fraction": df["blower_fraction"].mean(),
+    }
+
+    for i in range(5):
+        summary[f"action_{i}_pct"] = (
+            100 * actions.count(i) / len(actions)
+        )
+
+    return summary, df
+
+def run_full_window_comparison(
+    controllers, csv_path, metrics_dir, name
+):
+    summaries = []
+
+    for controller_name, controller in controllers.items():
+        summary, steps = evaluate_full_window(
+            controller, csv_path
+        )
+
+        summaries.append({
+            "controller": controller_name,
+            **summary
+        })
+
+        steps.to_csv(
+            metrics_dir / f"full_steps_{controller_name}_{name}.csv",
+            index=False
+        )
+
+    results = pd.DataFrame(summaries)
+
+    output = metrics_dir / f"full_evaluation_{name}.csv"
+    results.to_csv(output, index=False)
+
+    print(f"\nFULL-WINDOW EVALUATION: {name}")
+    print(results.to_string(index=False))
+    print("Saved:", output)
+
+    return results
 
 def make_controllers(train_dataset, model_seed):
     controllers = {'fixed_50': Fixed(2), 'fixed_75': Fixed(3), 'rule_based': RuleBased()}
@@ -151,10 +240,13 @@ def main():
             prefix = f'event_{args.dataset}_rows_{start}_{end}_trained_{args.train_dataset}'
             dry_name = f'{prefix}_reference_dry'
             event_name = f'{prefix}_weather'
-            dry_results = run_comparison(controllers, dry_csv, args.seed, args.episodes,
-                                         metrics_dir, dry_name)
-            event_results = run_comparison(controllers, event_csv, args.seed, args.episodes,
-                                           metrics_dir, event_name)
+            dry_results = run_full_window_comparison(
+                controllers, dry_csv, metrics_dir, dry_name
+            )
+
+            event_results = run_full_window_comparison(
+                controllers, event_csv, metrics_dir, event_name
+            )
             save_figures(event_results, figure_dir, event_name)
             comparison = event_results.set_index('controller').select_dtypes(include='number') - \
                          dry_results.set_index('controller').select_dtypes(include='number')
